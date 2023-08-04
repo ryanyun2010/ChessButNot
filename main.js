@@ -1,5 +1,5 @@
 var grid = [];
-var player = 0;
+var player = 0
 var powerups = {"Q": 1, "R": 2, "B": 2, "N": 2};
 var font;
 var level = 1;
@@ -14,6 +14,9 @@ var npow;
 var bpow;
 var cpow;
 var instructions;
+var delaytime = 0;
+var delay = 7;
+var i = -1;
 
 function setup(){
     board = loadImage("./board.png");
@@ -29,9 +32,12 @@ function setup(){
     font = loadFont("./JMH HORROR.otf");
     
     createCanvas(1440,800);
+    
     grid.push({"x":4,"y":7,"type":"K","movetype":"K", "player": 0});
+    if(level == 1){
     grid.push({"x":6,"y":0,"type":"P","movetype":"P", "player": 1});
     grid.push({"x":1,"y":1,"type":"P","movetype":"P", "player": 1});
+    }
 }
 function draw(){
     background(30,0,0);
@@ -71,127 +77,138 @@ function draw(){
         rect(Math.floor((mouseX - 520) / 50) * 50 + 520, Math.floor((mouseY - 400) / 50) * 50 + 400,50,50);
     }
     if(player == 1){
-            for(var p of grid){
-                if(p.player == 1){
-                    switch(p.type){
-                        case "P":
-                            if(p.y == 7){
-                                health --;
-                                grid.splice(grid.indexOf(p),1);
-                            }
-                            if(enemyCanMove(p.x,p.y + 1)){
-                                p.y ++;
-                            }
-                            break;
-                        case "B":
-                            if(p.y == 7){
-                                health --;
-                                grid.splice(grid.indexOf(p),1);
-                            }
-                            var upleft = [];
-                            var upright = [];
-                            var downleft = [];
-                            var downright = [];
-                            if(enemyCanMove(p.x-1,p.y-1)){upleft = [p.x-1,p.y-1];} 
-                            else{upleft = [p.x,p.y];}
+        
+        delaytime++;
+        if(delaytime > delay){
+            i++;
+            delaytime = 0;
+        }
+        if(i < grid.length && delaytime < 1){
+            p = grid[i];
+            if(p.player == 1){
+                switch(p.type){
+                    case "P":
+                        if(p.y == 7){
+                            health --;
+                            grid.splice(grid.indexOf(p),1);
+                            i--;
+                        }
+                        if(enemyCanMove(p.x,p.y + 1)){
+                            p.y ++;
+                        }
+                        break;
+                    case "B":
+                        console.log(i);
+                        console.log(grid[i]);
+                        if(p.y == 7){
+                            health --;
+                            grid.splice(grid.indexOf(p),1);
+                            i--;
+                        }
+                        var upleft = [];
+                        var upright = [];
+                        var downleft = [];
+                        var downright = [];
+                        if(enemyCanMove(p.x-1,p.y-1)){upleft = [p.x-1,p.y-1];} 
+                        else{upleft = [p.x,p.y];}
 
-                            if(enemyCanMove(p.x+1,p.y-1)){upright = [p.x+1,p.y-1];}
-                            else{upright = [p.x,p.y];}
+                        if(enemyCanMove(p.x+1,p.y-1)){upright = [p.x+1,p.y-1];}
+                        else{upright = [p.x,p.y];}
 
-                            if(enemyCanMove(p.x-1,p.y+1)){
-                                if(enemyCanMove(p.x-2,p.y+2)){
-                                    if(enemyCanMove(p.x-3,p.y+3)){
-                                        if(enemyCanMove(p.x-4,p.y+4)){
-                                            if(enemyCanMove(p.x-5,p.y+5)){
-                                                if(enemyCanMove(p.x-6,p.y+6)){
-                                                    if(enemyCanMove(p.x-7,p.y+7)){
-                                                        downleft = [p.x-7,p.y+7]; 
-                                                    }else{
-                                                        downleft = [p.x-6,p.y+6];
-                                                    }
+                        if(enemyCanMove(p.x-1,p.y+1)){
+                            if(enemyCanMove(p.x-2,p.y+2)){
+                                if(enemyCanMove(p.x-3,p.y+3)){
+                                    if(enemyCanMove(p.x-4,p.y+4)){
+                                        if(enemyCanMove(p.x-5,p.y+5)){
+                                            if(enemyCanMove(p.x-6,p.y+6)){
+                                                if(enemyCanMove(p.x-7,p.y+7)){
+                                                    downleft = [p.x-7,p.y+7]; 
                                                 }else{
-                                                    downleft = [p.x-5,p.y+5];
+                                                    downleft = [p.x-6,p.y+6];
                                                 }
                                             }else{
-                                                downleft = [p.x-4,p.y+4];
+                                                downleft = [p.x-5,p.y+5];
                                             }
                                         }else{
-                                            downleft = [p.x-3,p.y+3];
+                                            downleft = [p.x-4,p.y+4];
                                         }
                                     }else{
-                                        downleft = [p.x-2,p.y+2];
-                                    } 
+                                        downleft = [p.x-3,p.y+3];
+                                    }
                                 }else{
-                                    downleft = [p.x-1,p.y+1];
-                                }
+                                    downleft = [p.x-2,p.y+2];
+                                } 
+                            }else{
+                                downleft = [p.x-1,p.y+1];
                             }
-                            else{downleft = [p.x,p.y];}
-                            
-                            if(enemyCanMove(p.x+1,p.y+1)){
-                                if(enemyCanMove(p.x+2,p.y+2)){
-                                    if(enemyCanMove(p.x+3,p.y+3)){
-                                        if(enemyCanMove(p.x+4,p.y+4)){
-                                            if(enemyCanMove(p.x+5,p.y+5)){
-                                                if(enemyCanMove(p.x+6,p.y+6)){
-                                                    if(enemyCanMove(p.x+7,p.y+7)){
-                                                        downright = [p.x+7,p.y+7]; 
-                                                    }else{
-                                                        downright = [p.x+6,p.y+6];
-                                                    }
+                        }
+                        else{downleft = [p.x,p.y];}
+                        
+                        if(enemyCanMove(p.x+1,p.y+1)){
+                            if(enemyCanMove(p.x+2,p.y+2)){
+                                if(enemyCanMove(p.x+3,p.y+3)){
+                                    if(enemyCanMove(p.x+4,p.y+4)){
+                                        if(enemyCanMove(p.x+5,p.y+5)){
+                                            if(enemyCanMove(p.x+6,p.y+6)){
+                                                if(enemyCanMove(p.x+7,p.y+7)){
+                                                    downright = [p.x+7,p.y+7]; 
                                                 }else{
-                                                    downright = [p.x+5,p.y+5];
+                                                    downright = [p.x+6,p.y+6];
                                                 }
                                             }else{
-                                                downright = [p.x+4,p.y+4];
+                                                downright = [p.x+5,p.y+5];
                                             }
                                         }else{
-                                            downright = [p.x+3,p.y+3];
+                                            downright = [p.x+4,p.y+4];
                                         }
                                     }else{
-                                        downright = [p.x+2,p.y+2];
-                                    } 
+                                        downright = [p.x+3,p.y+3];
+                                    }
                                 }else{
-                                    downright = [p.x+1,p.y+1];
-                                }
+                                    downright = [p.x+2,p.y+2];
+                                } 
+                            }else{
+                                downright = [p.x+1,p.y+1];
                             }
-                            else{downright = [p.x,p.y];}
-                            console.log(upleft,upright,downleft,downright,[p.x,p.y])
-                            if(downright[0] != p.x && downright[1] != p.y && downleft[0] != p.x && downleft[1] != p.y){
-                                if(downright[1] > downleft[1]){
-                                    p.x = downright[0];
-                                    p.y = downright[1];
-                                }else{
-                                    p.x = downleft[0];
-                                    p.y = downleft[1];
-                                }
-                            }else if(downleft[0] != p.x && downleft[1] != p.y){
+                        }
+                        else{downright = [p.x,p.y];}
+                        if(downright[0] != p.x && downright[1] != p.y && downleft[0] != p.x && downleft[1] != p.y){
+                            if(downright[1] > downleft[1]){
+                                p.x = downright[0];
+                                p.y = downright[1];
+                            }else{
                                 p.x = downleft[0];
                                 p.y = downleft[1];
                             }
-                            else if(downright[0] != p.x && downright[1] != p.y){
-                                p.x = downright[0];
-                                p.y = downright[1];
-                            }else if(upright[0] != p.x && upright[1] != p.y && upleft[0] != p.x && upleft[1] != p.y){
-                                if(upright[1] > upleft[1]){
-                                    p.x = upright[0];
-                                    p.y = upright[1];
-                                }else{
-                                    p.x = upleft[0];
-                                    p.y = upleft[1];
-                                }
-                            }else if(upright[0] != p.x && upright[1] != p.y){
+                        }else if(downleft[0] != p.x && downleft[1] != p.y){
+                            p.x = downleft[0];
+                            p.y = downleft[1];
+                        }
+                        else if(downright[0] != p.x && downright[1] != p.y){
+                            p.x = downright[0];
+                            p.y = downright[1];
+                        }else if(upright[0] != p.x && upright[1] != p.y && upleft[0] != p.x && upleft[1] != p.y){
+                            if(upright[1] > upleft[1]){
                                 p.x = upright[0];
                                 p.y = upright[1];
-                            }
-                            else{
+                            }else{
                                 p.x = upleft[0];
                                 p.y = upleft[1];
                             }
-                            break;
-                    }
+                        }else if(upright[0] != p.x && upright[1] != p.y){
+                            p.x = upright[0];
+                            p.y = upright[1];
+                        }
+                        else{
+                            p.x = upleft[0];
+                            p.y = upleft[1];
+                        }
+                        break;
                 }
+            }else{
             }
-            player = 0;
+        }else if (i >= grid.length){player = 0;}
+            
     }
     for(var g of grid){
         if(g.player == 1){
@@ -199,6 +216,7 @@ function draw(){
         }
     }
     level++;
+    player = 0;
     switch(level){
         case 2:
             grid.push({"x":6,"y":0,"type":"P","movetype":"P", "player": 1});
@@ -215,14 +233,21 @@ function draw(){
             grid.push({"x":3,"y":0,"type":"B","movetype":"B", "player": 1}); 
             break;
         case 5:
-            powerups.Q ++;
-            powerups.R += 2;
-            powerups.N += 2;
+            powerups.R += 1;
+            powerups.N += 4;
             powerups.B += 2;
             grid.push({"x":6,"y":0,"type":"B","movetype":"B", "player": 1});
             grid.push({"x":3,"y":0,"type":"B","movetype":"B", "player": 1}); 
             grid.push({"x":4,"y":1,"type":"P","movetype":"P", "player": 1}); 
-            grid.push({"x":5,"y":1,"type":"P","movetype":"P", "player": 1}); 
+            grid.push({"x":5,"y":1,"type":"P","movetype":"P", "player": 1});
+            break;
+        case 6:
+            grid.push({"x":1,"y":0,"type":"B","movetype":"B", "player": 1});
+            grid.push({"x":2,"y":0,"type":"B","movetype":"B", "player": 1});
+            grid.push({"x":3,"y":1,"type":"P","movetype":"P", "player": 1});
+            grid.push({"x":5,"y":5,"type":"P","movetype":"P", "player": 1});
+            grid.push({"x":4,"y":4,"type":"P","movetype":"P", "player": 1});
+            break;
         default:
             break;
     }
@@ -492,6 +517,8 @@ function mousePressed(){
         grid.splice(grid.indexOf(getGrid(prevkingspot[0],prevkingspot[1])),1);
         
         player = 1;
+        delaytime = -1;
+        i = 0;
     }
 }
 
