@@ -4,8 +4,30 @@ var powerups = {"Q": 1, "R": 2, "B": 2, "N": 2};
 var font;
 var level = 1;
 var health = 3;
+var board;
+var king;
+var pawn;
+var bishop;
+var qpow;
+var rpow;
+var npow;
+var bpow;
+var cpow;
+var instructions;
+
 function setup(){
+    board = loadImage("./board.png");
+    king = loadImage("./king.png");
+    pawn = loadImage("./pawn.png");
+    bishop = loadImage("./bishop.png");
+    cpow = loadImage("./cancel.png");
+    qpow = loadImage("./queenpower.png");
+    rpow = loadImage("./rookpower.png");
+    npow = loadImage("./knightpower.png");
+    bpow = loadImage("./bishoppower.png");
+    instructions = loadImage("./instructions.png");
     font = loadFont("./JMH HORROR.otf");
+    
     createCanvas(1440,800);
     grid.push({"x":4,"y":7,"type":"K","movetype":"K", "player": 0});
     grid.push({"x":6,"y":0,"type":"P","movetype":"P", "player": 1});
@@ -22,24 +44,26 @@ function draw(){
     fill(100);
     stroke(0);
     strokeWeight(7);
-    rect(100,120,300,120); // Q
-    rect(100,260,300,120); // R
-    rect(100,400,300,120); // B
-    rect(100,540,300,120); // N
+    image(qpow,100,120,300,120); // Q
+    image(rpow,100,260,300,120); // R
+    image(bpow,100,400,300,120); // B
+    image(npow,100,540,300,120); // N
+    image(cpow,130,680,240,80); // C
     noStroke();
     fill("white");
     textStyle(BOLD);
-    textSize(20);
-    text("Queen x"+powerups.Q, 250,160);
-    text("Rook x"+powerups.R, 250,300);
-    text("Bishop x"+powerups.B, 250,440);
-    text("Knight x"+powerups.N, 250,580);
+    textSize(12);
+    text(powerups.Q, 275,182);
+    text(powerups.R, 275,322);
+    text(powerups.B, 275,462);
+    text(powerups.N, 275,602);
     textStyle(NORMAL);
     textFont(font);
     textSize(60);
     text("LEVEL " + level, 720, 110)
     text("HEALTH " + health + "/3", 720, 700)
     textFont("sans-serif");
+    image(instructions,1000,150)
     if(mouseX > 520 && mouseY > 200 && mouseX < 920 && mouseY < 600){
         noFill();
         strokeWeight(3);
@@ -190,6 +214,15 @@ function draw(){
             grid.push({"x":6,"y":0,"type":"B","movetype":"P", "player": 1});
             grid.push({"x":3,"y":0,"type":"B","movetype":"B", "player": 1}); 
             break;
+        case 5:
+            powerups.Q ++;
+            powerups.R += 2;
+            powerups.N += 2;
+            powerups.B += 2;
+            grid.push({"x":6,"y":0,"type":"B","movetype":"B", "player": 1});
+            grid.push({"x":3,"y":0,"type":"B","movetype":"B", "player": 1}); 
+            grid.push({"x":4,"y":1,"type":"P","movetype":"P", "player": 1}); 
+            grid.push({"x":5,"y":1,"type":"P","movetype":"P", "player": 1}); 
         default:
             break;
     }
@@ -212,25 +245,19 @@ function findKingSpot(){
 }
 function drawGrid(){
     noStroke();
+    image(board,520,200,400,400);
     for(var x = 0; x < 8; x++){
         for(var y = 0; y < 8; y++){
-            if((x + y) % 2 == 0){
-             fill(50);
-            }else{
-                fill(230);
-            }
-            rect(520 + x * 50, 200 + y * 50, 50, 50);
             if(player == 0){
             if(canMove(findKingSpot().movetype,findKingSpot().x, findKingSpot().y, x,y)){
-                fill(255,0,0,80);
+                fill(255,255,0,80);
                 rect(520 + x * 50, 200 + y * 50, 50, 50);
             }
         }
         if(getGrid(x,y).player == 0){
             switch(getGrid(x,y).type){
                 case "K":
-                    fill("green");
-                    rect(525 + x * 50, 205 + y * 50, 40, 40);
+                    image(king,505 + x * 50, 180 + y * 50, 80, 70);
                     break;
                 default:
                     break;
@@ -239,12 +266,10 @@ function drawGrid(){
         if(getGrid(x,y).player == 1){
             switch(getGrid(x,y).type){
                 case "P":
-                    fill("red");
-                    rect(525 + x * 50, 205 + y * 50, 40, 40);
+                    image(pawn,510 + x * 50, 180 + y * 50, 70, 87);
                     break;
                 case "B":
-                    fill("orange");
-                    rect(525 + x * 50, 205 + y * 50, 40, 40);
+                    image(bishop,510 + x * 50, 189 + y * 50, 70, 71);
                     break;
                 default:
                     break;
@@ -432,41 +457,40 @@ function canMove(type,x1,y1,x2,y2){
 }
 function mousePressed(){
     if(player == 0){
+        if(mouseX > 130 && mouseX < 370 && mouseY > 680 && mouseY < 760){
+            findKingSpot().movetype = "K"; 
+        }
         if(mouseX > 100 && mouseX < 400){
             if(mouseY > 120 && mouseY < 240 && powerups.Q > 0){
-                // Q
                 findKingSpot().movetype = "Q";
-                powerups.Q--;
             }
             if(mouseY > 260 && mouseY < 380 && powerups.R > 0){
-                // R
                 findKingSpot().movetype = "R";
-                powerups.R--;
             }
             if(mouseY > 400 && mouseY < 520 && powerups.B > 0){
-                // B
                 findKingSpot().movetype = "B";
-                powerups.B--;
             }
             if(mouseY > 540 && mouseY < 660 && powerups.N > 0){
-                // N
                 findKingSpot().movetype = "N";
-                powerups.N--;
             }
         }
     }
     if(canMove(findKingSpot().movetype,findKingSpot().x, findKingSpot().y,Math.floor((mouseX - 520) / 50), Math.floor((mouseY - 200) / 50)) && player == 0){
+        if(findKingSpot().movetype != "K"){
+            powerups[findKingSpot().movetype]--;
+        }
         var prevkingspot = [findKingSpot().x, findKingSpot().y];
         if(getGrid(Math.floor((mouseX - 520) / 50), Math.floor((mouseY - 200) / 50))){
             console.log("test");
+            
             getGrid(Math.floor((mouseX - 520) / 50), Math.floor((mouseY - 200) / 50)).type = "K";
         getGrid(Math.floor((mouseX - 520) / 50), Math.floor((mouseY - 200) / 50)).movetype = "K";
         getGrid(Math.floor((mouseX - 520) / 50), Math.floor((mouseY - 200) / 50)).player = 0;
         }else{
-            
             grid.push({"x": Math.floor((mouseX - 520) / 50), "y": Math.floor((mouseY - 200) / 50), "type": "K", "movetype":"K", "player": 0});
         }
         grid.splice(grid.indexOf(getGrid(prevkingspot[0],prevkingspot[1])),1);
+        
         player = 1;
     }
 }
